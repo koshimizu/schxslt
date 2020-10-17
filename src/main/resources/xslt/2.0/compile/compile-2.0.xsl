@@ -136,7 +136,10 @@
         <variable name="schxslt:report" as="node()*">
           <for-each select="$report/schxslt:pattern">
             <sequence select="node()"/>
-            <sequence select="$report/schxslt:rule[@pattern = current()/@id]/node()"/>
+            <!-- changing the following, to account for input XML files that were created by 
+            stylesheets beforehand, and so have elements with different values of base-uri(.) -->
+            <!--<sequence select="$report/schxslt:rule[@pattern = current()/@id]/node()"/>-->
+            <sequence select="$report/schxslt:rule[starts-with(@pattern, current()/@id)]/node()"/>
           </for-each>
         </variable>
 
