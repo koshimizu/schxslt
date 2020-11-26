@@ -185,6 +185,7 @@
 
       <!-- Check if a context node was already matched by a rule of the current pattern. -->
       <param name="schxslt:rules" as="element(schxslt:rule)*"/>
+      <param name="doc-base-uri" tunnel="yes" as="xs:string" select="base-uri(.)"/>
 
       <xsl:call-template name="schxslt:let-variable">
         <xsl:with-param name="bindings" as="element(sch:let)*" select="sch:let"/>
@@ -192,7 +193,7 @@
 
       <choose>
         <when test="empty($schxslt:rules[@pattern = '{generate-id(..)}'][@context = generate-id(current())])">
-          <schxslt:rule pattern="{generate-id(..)}@{{base-uri(.)}}">
+          <schxslt:rule pattern="{generate-id(..)}@{{$doc-base-uri}}">
             <xsl:call-template name="schxslt-api:fired-rule">
               <xsl:with-param name="rule" as="element(sch:rule)" select="."/>
             </xsl:call-template>
@@ -200,7 +201,7 @@
           </schxslt:rule>
         </when>
         <otherwise>
-          <schxslt:rule pattern="{generate-id(..)}@{{base-uri(.)}}">
+          <schxslt:rule pattern="{generate-id(..)}@{{$doc-base-uri}}">
             <xsl:call-template name="schxslt-api:suppressed-rule">
               <xsl:with-param name="rule" as="element(sch:rule)" select="."/>
             </xsl:call-template>
@@ -262,7 +263,9 @@
             </schxslt:pattern>
           </xsl:for-each>
 
-          <apply-templates mode="{$mode}" select="."/>
+          <apply-templates mode="{$mode}" select=".">
+            <with-param tunnel="yes" name="doc-base-uri" select="$this-base-uri"/>
+          </apply-templates>
         </for-each>
 
       </template>
