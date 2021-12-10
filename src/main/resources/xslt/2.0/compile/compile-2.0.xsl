@@ -152,12 +152,13 @@
       </template>
 
       <xsl:comment>By default, the modes employed in this schxslt file are shallow skips...</xsl:comment>
+      <!-- TODO: convert default templates to <xsl:mode> declaration -->
       <template match="text() | @*" mode="{string-join($target-schxslt-template-modes, ' ')}"/>
       <template match="* | processing-instruction() | comment()" mode="{string-join($target-schxslt-template-modes, ' ')}">
         <apply-templates mode="#current" select="@* | node()"/>
       </template>
       <xsl:comment>...but all other template modes should defer to rules specified by any imported stylesheets.</xsl:comment>
-      <template match="document-node() | node() | @*" mode="#all" priority="-1">
+      <template match="document-node() | node() | @*" mode="#all" priority="-1" use-when="$schxslt-is-master">
         <apply-imports/>
       </template>
 
@@ -228,7 +229,7 @@
   <xsl:template name="schxslt:validation-stylesheet-body">
     <xsl:param name="patterns" as="element(sch:pattern)+"/>
 
-    <xsl:for-each-group select="$patterns" group-by="string-join((generate-id(sch:let), base-uri(.), @documents), '&lt;')">
+    <xsl:for-each-group select="$patterns" group-by="string-join((generate-id(sch:let[1]), base-uri(.), @documents), '&lt;')">
       <xsl:variable name="mode" as="xs:string" select="generate-id()"/>
       <xsl:variable name="baseUri" as="xs:anyURI" select="base-uri(.)"/>
 
